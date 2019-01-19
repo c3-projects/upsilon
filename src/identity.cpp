@@ -17,14 +17,14 @@
     PUB_KEY_TYPE pub_key; \
     mutable Botan::PK_Verifier pub; \
   public: \
-    bool verify(data_const_ref input_hash, data_const_ref sig) const override { \
+    bool verify(nu::data_const_ref input_hash, nu::data_const_ref sig) const override { \
       return pub.verify_message(input_hash.data(), input_hash.size(), sig.data(), sig.size()); \
     } \
-    data serialise_pub() const override { \
+    nu::data serialise_pub() const override { \
       return pub_key.public_key_bits(); \
     } \
   public: \
-    CLASS_NAME##_verifier(data_const_ref b) : \
+    CLASS_NAME##_verifier(nu::data_const_ref b) : \
       pub_key{std::vector<uint8_t>{b.begin(), b.end()}}, \
       pub{pub_key, ""} {} \
   }; \
@@ -34,17 +34,17 @@
     mutable Botan::PK_Verifier pub; \
     mutable Botan::PK_Signer priv; \
   public: \
-    data sign(data_const_ref input_hash) const override { \
+    nu::data sign(nu::data_const_ref input_hash) const override { \
       return priv.sign_message(input_hash.data(), input_hash.size(), csprng_wrapper::standard); \
     } \
-    bool verify(data_const_ref input_hash, data_const_ref sig) const override { \
+    bool verify(nu::data_const_ref input_hash, nu::data_const_ref sig) const override { \
       return pub.verify_message(input_hash.data(), input_hash.size(), sig.data(), sig.size()); \
     } \
-    data serialise_priv() const override { \
+    nu::data serialise_priv() const override { \
       auto ret = priv_key.get_private_key(); \
       return { ret.begin(), ret.end() }; \
     } \
-    data serialise_pub() const override { \
+    nu::data serialise_pub() const override { \
       return priv_key.public_key_bits(); \
     } \
   public: \
@@ -56,13 +56,13 @@
       priv{priv_key, csprng_wrapper::standard, ""} {} \
     inline CLASS_NAME##_signer() : \
       CLASS_NAME##_signer{gen()} {} \
-    inline CLASS_NAME##_signer(data_const_ref b) : \
+    inline CLASS_NAME##_signer(nu::data_const_ref b) : \
       CLASS_NAME##_signer{PRIV_KEY_TYPE{Botan::secure_vector<uint8_t>{ b.begin(), b.end() }}} {} \
   }; \
   template<> \
   std::unique_ptr<signer> gen_signer<ALG>() { return std::make_unique<CLASS_NAME##_signer>(); } \
   template<> \
-  std::unique_ptr<signer> get_signer<ALG>(data_const_ref b) { \
+  std::unique_ptr<signer> get_signer<ALG>(nu::data_const_ref b) { \
     return std::make_unique<CLASS_NAME##_signer>(b); \
   } \
   auto __##CLASS_NAME##_signer_get_registered = \
@@ -78,9 +78,9 @@
 
 namespace c3::upsilon {
   std::map<signature_algorithm,
-           std::function<std::unique_ptr<verifier>(data_const_ref)>> _verifiers;
+           std::function<std::unique_ptr<verifier>(nu::data_const_ref)>> _verifiers;
   std::map<signature_algorithm,
-           std::function<std::unique_ptr<signer>(data_const_ref)>> _signers;
+           std::function<std::unique_ptr<signer>(nu::data_const_ref)>> _signers;
   std::map<signature_algorithm, std::function<std::unique_ptr<signer>()>> _sig_gens;
 
   C3_UPSILON_DEF_SIG_BOTAN(curve25519, signature_algorithm::Curve25519,
