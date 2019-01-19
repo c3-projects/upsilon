@@ -2,28 +2,27 @@ cmake_minimum_required(VERSION 3.9)
 
 project(c3-upsilon)
 
-set(VERSION 0.1.1)
+set(VERSION 0.2.0)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+#set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_STANDARD 17)
 
 # For some reason, CMAKE_CXX_STANDARD is broken on my system
-add_compile_options("-Wall" "-Wextra" "-std=c++17") #"-pedantic"
+add_compile_options("-Wall" "-Wextra") #"-pedantic"
+
+find_package(c3-nu REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(BOTAN REQUIRED botan-2)
 include_directories(${BOTAN_INCLUDE_DIRS})
-
-find_package(Threads REQUIRED)
-
-include_directories(${PROJECT_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE source src/*.cpp)
 
 add_library(${PROJECT_NAME} ${source})
 #add_executable(${PROJECT_NAME} ${source})
 
-target_link_libraries(${PROJECT_NAME} ${BOTAN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${PROJECT_NAME} ${BOTAN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} c3-nu)
+#target_include_directories(${PROJECT_NAME} PUBLIC $<INSTALL_INTERFACE:include/>)
 
 file(GLOB_RECURSE tests tests/*.cxx)
 
@@ -46,28 +45,28 @@ enable_testing()
 
 SET(CPACK_PACKAGE_VERSION ${VERSION})
 
+include(GNUInstallDirs)
 install(
   TARGETS ${PROJECT_NAME}
-  LIBRARY DESTINATION lib/c3/
-  ARCHIVE DESTINATION lib/c3/
   COMPONENT lib
+  EXPORT ${PROJECT_NAME}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 install(
   DIRECTORY include/
-  DESTINATION include/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   COMPONENT dev
 )
 
 install(
-  DIRECTORY cmake/
-  DESTINATION lib/c3/cmake
+  EXPORT ${PROJECT_NAME}
+  FILE ${PROJECT_NAME}-config.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
   COMPONENT dev
 )
-
-if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/usr")
-endif()
 
 if(NOT DEFINED CPACK_GENERATOR)
   # TODO: platform logic
@@ -88,7 +87,7 @@ if(CPACK_GENERATOR STREQUAL "DEB")
   set(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS " \
     libstdc++-7-dev | libc++-7-dev, \
     c3-upsilon (= ${VERSION}), \
-    c3-nu-dev (>= 0.1.2), c3-nu-dev (<< 0.2) \
+    c3-nu-dev (>= 0.2.0), c3-nu-dev (<< 0.3) \
   ")
 endif()
 
