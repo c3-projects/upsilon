@@ -76,16 +76,15 @@ if(CPACK_GENERATOR STREQUAL "DEB")
   set(CPACK_DEBIAN_LIB_PACKAGE_NAME "c3-${PROJECT_NAME}")
   set(CPACK_DEBIAN_DEV_PACKAGE_NAME "c3-${PROJECT_NAME}-dev")
   SET(CPACK_COMPONENT_UNSPECIFIED_HIDDEN TRUE)
-  set(CPACK_DEBIAN_LIB_PACKAGE_DEPENDS
-    botan >= 2.8.0
-  )
-  set(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS
-    libstdc++-7-dev | libc++-7-dev,
-    c3-upsilon == ${VERSION},
-    libbotan-2-dev >= 2.8.0
-  )
+  set(CPACK_DEBIAN_LIB_PACKAGE_DEPENDS " \
+    botan (>= 2.8.0), botan (<< 3) \
+  ")
+  set(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS " \
+    libstdc++-7-dev | libc++-7-dev, \
+    c3-upsilon (= ${VERSION}), \
+    c3-nu-dev (>= 0.1.2), c3-nu-dev (<< 0.2) \
+  ")
 endif()
-
 
 set(CPACK_COMPONENT_DEV_DEPENDS lib)
 
