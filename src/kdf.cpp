@@ -7,13 +7,13 @@
   class CLASS_NAME : public kdf { \
   public: \
     kdf_algorithm alg() const noexcept override { return ALG; } \
-    void expand(data_const_ref input, data_ref output) const override; \
+    void expand(nu::data_const_ref input, nu::data_ref output) const override; \
   }; \
   static const CLASS_NAME CLASS_NAME##_static; \
   static auto __##CLASS_NAME##_registered = _kdfs.emplace(ALG, &CLASS_NAME##_static); \
   template<> \
   const kdf* get_kdf<ALG>() { return &CLASS_NAME##_static; } \
-  void CLASS_NAME::expand(data_const_ref INPUT, data_ref OUTPUT) const
+  void CLASS_NAME::expand(nu::data_const_ref INPUT, nu::data_ref OUTPUT) const
 
 namespace c3::upsilon {
   std::map<kdf_algorithm, const kdf*> _kdfs;

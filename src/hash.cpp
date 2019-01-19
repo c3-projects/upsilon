@@ -10,7 +10,7 @@
     static constexpr auto props = get_hash_properties<ALG>(); \
     static constexpr auto static_props = props; \
   public: \
-    void compute_hash(data_const_ref input, data_ref output) const override { \
+    void compute_hash(nu::data_const_ref input, nu::data_ref output) const override { \
       CLASS_NAME##_impl->update(input.data(), input.size()); \
       if (output.size() == props.max_output) \
         CLASS_NAME##_impl->final(output.data()); \
@@ -22,7 +22,7 @@
         std::copy(tmp_output.begin(), tmp_output.begin() + output.size(), output.begin()); \
       } \
     } \
-    void compute_hash(data_const_ref input, data_const_ref salt, data_ref output) const override { \
+    void compute_hash(nu::data_const_ref input, nu::data_const_ref salt, nu::data_ref output) const override { \
       CLASS_NAME##_impl->update(salt.data(), salt.size()); \
       CLASS_NAME##_impl->update(input.data(), input.size()); \
       if (output.size() == props.max_output) \
@@ -38,7 +38,7 @@
     std::unique_ptr<partial_hash> begin_hash() const override { \
       throw std::runtime_error("Not implemented"); \
     } \
-    std::unique_ptr<partial_hash> begin_hash(data_const_ref) const override{ \
+    std::unique_ptr<partial_hash> begin_hash(nu::data_const_ref) const override{ \
       throw std::runtime_error("Not implemented"); \
     } \
     const hash_properties& properties() const noexcept override { return static_props; } \
