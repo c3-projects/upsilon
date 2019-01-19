@@ -15,6 +15,7 @@ namespace c3::upsilon {
       std::generate(output, output + len, csprng::standard);
     }
     std::string name() const override { return "upsilon_csprng"; }
+    virtual bool accepts_input() const override { return false; }
 
   public:
     static thread_local csprng_wrapper standard;

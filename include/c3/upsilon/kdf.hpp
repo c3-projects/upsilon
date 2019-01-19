@@ -1,9 +1,9 @@
 #pragma once
 
 #include "c3/upsilon/hash.hpp"
-#include "c3/upsilon/data/base.hpp"
+#include "c3/nu/data.hpp"
 
-#include "c3/upsilon/data/helpers.hpp"
+#include "c3/nu/data/helpers.hpp"
 
 namespace c3::upsilon {
   enum class kdf_algorithm : uint16_t {
@@ -13,8 +13,8 @@ namespace c3::upsilon {
 
   class kdf {
   public:
-    virtual void expand(data_const_ref input, data_ref output) const = 0;
-    data expand(data_const_ref input, size_t output_len);
+    virtual void expand(nu::data_const_ref input, nu::data_ref output) const = 0;
+    nu::data expand(nu::data_const_ref input, size_t output_len);
 
     virtual kdf_algorithm alg() const noexcept = 0;
 

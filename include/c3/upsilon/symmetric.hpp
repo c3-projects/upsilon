@@ -7,9 +7,10 @@
 
 #include "c3/upsilon/except.hpp"
 #include "c3/upsilon/nuker.hpp"
-#include "c3/upsilon/data/common.hpp"
 
-#include "c3/upsilon/data/helpers.hpp"
+#include "c3/nu/data.hpp"
+
+#include "c3/nu/data/helpers.hpp"
 
 namespace c3::upsilon {
   struct symmetric_properties {
@@ -71,19 +72,19 @@ namespace c3::upsilon {
   class symmetric_function {
   public:
     /// Successive calls with the same plaintext should yield different results
-    virtual void encrypt(data_ref input_output) = 0;
-    virtual uint64_t encrypt(data_const_ref input, data_ref output) = 0;
-    inline data encrypt(data_const_ref input) {
-      data ret(static_cast<size_t>(input.size()));
+    virtual void encrypt(nu::data_ref input_output) = 0;
+    virtual uint64_t encrypt(nu::data_const_ref input, nu::data_ref output) = 0;
+    inline nu::data encrypt(nu::data_const_ref input) {
+      nu::data ret(static_cast<size_t>(input.size()));
       encrypt(input, ret);
       return ret;
     }
 
     /// Successive calls with the same cyphertext should yield different results
-    virtual void decrypt(data_ref input_output) = 0;
-    virtual uint64_t decrypt(data_const_ref input, data_ref output) = 0;
-    inline data decrypt(data_const_ref input) {
-      data ret(static_cast<size_t>(input.size()));
+    virtual void decrypt(nu::data_ref input_output) = 0;
+    virtual uint64_t decrypt(nu::data_const_ref input, nu::data_ref output) = 0;
+    inline nu::data decrypt(nu::data_const_ref input) {
+      nu::data ret(static_cast<size_t>(input.size()));
       decrypt(input, ret);
       return ret;
     }
@@ -103,11 +104,11 @@ namespace c3::upsilon {
   inline auto get_symmetric_function(key_const_ref<Alg> key, iv_const_ref<Alg> iv);
 
   extern std::map<symmetric_algorithm,
-                  std::function<std::unique_ptr<symmetric_function>(data_const_ref, data_const_ref)>> _symmetric_functions;
+                  std::function<std::unique_ptr<symmetric_function>(nu::data_const_ref, nu::data_const_ref)>> _symmetric_functions;
 
   inline std::unique_ptr<symmetric_function> get_symmetric_function(symmetric_algorithm alg,
-                                                                    data_const_ref key,
-                                                                    data_const_ref iv) {
+                                                                    nu::data_const_ref key,
+                                                                    nu::data_const_ref iv) {
     auto iter = _symmetric_functions.find(alg);
     if (iter == _symmetric_functions.end())
       throw c3::upsilon::algorithm_not_implemented{alg};
@@ -137,4 +138,4 @@ namespace c3::upsilon {
   C3_UPSILON_SYM_ALG(symmetric_algorithm::XChaCha20_20, (256 / 8), (192 / 8));
 }
 
-#include "c3/upsilon/data/clean_helpers.hpp"
+#include "c3/nu/data/clean_helpers.hpp"

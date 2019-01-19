@@ -21,8 +21,8 @@ namespace c3::upsilon {
   std::map<symmetric_algorithm, symmetric_properties> _symmetric_properties;
 
   std::map<symmetric_algorithm,
-           std::function<std::unique_ptr<symmetric_function>(data_const_ref,
-                                                             data_const_ref)>> _symmetric_functions;
+           std::function<std::unique_ptr<symmetric_function>(nu::data_const_ref,
+                                                             nu::data_const_ref)>> _symmetric_functions;
 
   // XXX: Assumes F(F(M)) = M
   template<symmetric_algorithm Alg>
@@ -38,24 +38,24 @@ namespace c3::upsilon {
     }
 
   public:
-    void encrypt(data_ref inout) override {
+    void encrypt(nu::data_ref inout) override {
       size_t n_todo = static_cast<size_t>(inout.size());
       cipher->cipher(inout.data(), inout.data(), n_todo);
       stream_pos += n_todo;
     }
-    uint64_t encrypt(data_const_ref input, data_ref output) override {
+    uint64_t encrypt(nu::data_const_ref input, nu::data_ref output) override {
       size_t n_todo = static_cast<size_t>(std::min(input.size(), output.size()));
       cipher->cipher(input.data(), output.data(), n_todo);
       stream_pos += n_todo;
       return n_todo;
     }
 
-    void decrypt(data_ref inout) override {
+    void decrypt(nu::data_ref inout) override {
       size_t n_todo = static_cast<size_t>(inout.size());
       cipher->cipher(inout.data(), inout.data(), n_todo);
       stream_pos += n_todo;
     }
-    uint64_t decrypt(data_const_ref input, data_ref output) override {
+    uint64_t decrypt(nu::data_const_ref input, nu::data_ref output) override {
       size_t n_todo = static_cast<size_t>(std::min(input.size(), output.size()));
       cipher->cipher(input.data(), output.data(), n_todo);
       stream_pos += n_todo;

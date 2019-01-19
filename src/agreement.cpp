@@ -8,7 +8,7 @@
 
 #define C3_UPSILON_AGREEMENT_BOILERPLATE(CLASS_NAME, ALG) \
   template<> \
-  std::unique_ptr<agreement_function> get_agreement_function<ALG>(data_const_ref serialised_af) { \
+  std::unique_ptr<agreement_function> get_agreement_function<ALG>(nu::data_const_ref serialised_af) { \
     return std::make_unique<CLASS_NAME>(serialised_af); \
   } \
   template<> \
@@ -22,7 +22,7 @@
 
 namespace c3::upsilon {
   std::map<agreement_algorithm,
-           std::function<std::unique_ptr<agreement_function>(data_const_ref)>> _agreement_functions;
+           std::function<std::unique_ptr<agreement_function>(nu::data_const_ref)>> _agreement_functions;
 
   std::map<agreement_algorithm, std::function<std::unique_ptr<agreement_function>()>> _ag_gens;
 
@@ -30,7 +30,7 @@ namespace c3::upsilon {
     Botan::Curve25519_PrivateKey priv;
 
   public:
-    virtual data agree(data_const_ref other_public) const override {
+    virtual nu::data agree(nu::data_const_ref other_public) const override {
       Botan::PK_Key_Agreement op(priv, csprng_wrapper::standard, "Raw");
 
       // Looked up size on cr.yp.to
@@ -39,18 +39,18 @@ namespace c3::upsilon {
       return { k.begin(), k.end() };
     }
 
-    virtual data serialise_public() const override {
+    virtual nu::data serialise_public() const override {
       return priv.public_value();
     }
 
-    virtual data serialise_private() const  override {
+    virtual nu::data serialise_private() const  override {
       auto ret = Botan::PKCS8::BER_encode(priv);
       return { ret.begin(), ret.end() };
     }
 
   public:
     inline curve25519() : priv{csprng_wrapper::standard} {};
-    inline curve25519(data_const_ref b) : priv{Botan::SecureVector<uint8_t>{b.begin(), b.end()}} {};
+    inline curve25519(nu::data_const_ref b) : priv{Botan::SecureVector<uint8_t>{b.begin(), b.end()}} {};
   };
 
   C3_UPSILON_AGREEMENT_BOILERPLATE(curve25519, agreement_algorithm::Curve25519);

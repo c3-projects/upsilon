@@ -1,4 +1,4 @@
-//! An allocator that destroys the data on free
+//! An allocator that destroys the nu::data on free
 #pragma once
 
 #include <memory>
@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace c3::upsilon {
-  void nuke(uint8_t* data, size_t n_bytes);
+  void nuke(uint8_t*, size_t);
 
   template<typename T>
   class nuker {
