@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 
-project(c3-upsilon VERSION 0.2.1)
+project(c3-upsilon VERSION 0.2.2)
 
 #set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_STANDARD 17)
@@ -84,7 +84,7 @@ if(CPACK_GENERATOR STREQUAL "DEB")
   ")
   set(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS " \
     libstdc++-7-dev | libc++-7-dev, \
-    c3-upsilon (= ${VERSION}), \
+    c3-upsilon (= ${PROJECT_VERSION}), \
     c3-nu-dev (>= 0.2.0), c3-nu-dev (<< 0.4) \
   ")
 endif()
