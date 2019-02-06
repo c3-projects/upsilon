@@ -6,8 +6,8 @@ constexpr auto kdf_alg = c3::upsilon::kdf_algorithm::Shake256;
 constexpr size_t out_len = 1024;
 
 int main() {
-  auto alice = c3::upsilon::agreer::gen<agreement_alg, kdf_alg>();
-  auto bob = c3::upsilon::agreer::gen(agreement_alg, kdf_alg);
+  auto alice = c3::upsilon::agreer::gen<kdf_alg, agreement_alg>();
+  auto bob = c3::upsilon::agreer::gen(kdf_alg, agreement_alg);
 
   auto alice_k = alice.derive_shared_secret(bob.get_public(), out_len);
   auto bob_k = bob.derive_shared_secret<out_len>(alice.get_public());

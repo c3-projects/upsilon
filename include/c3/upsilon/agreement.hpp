@@ -56,6 +56,23 @@ namespace c3::upsilon {
       return (iter->second)();
   }
 
+  class remote_agreer : public nu::serialisable<remote_agreer> {
+  public:
+    kdf_algorithm kdf_alg;
+    agreement_algorithm agreement_alg;
+    nu::data shared_secret;
+
+  public:
+    inline nu::data _serialise() const override {
+      return nu::squash_hybrid(kdf_alg, agreement_alg, shared_secret);
+    }
+    C3_NU_DEFINE_DESERIALISE(remote_agreer, b) {
+      remote_agreer ret;
+      nu::expand_hybrid(b, ret.kdf_alg, ret.agreement_alg, ret.shared_secret);
+      return ret;
+    }
+  };
+
   class agreer : public nu::serialisable<agreer> {
   private:
     agreement_algorithm _agreement_alg;
@@ -64,36 +81,36 @@ namespace c3::upsilon {
 
   public:
     template<symmetric_algorithm SymAlg>
-    symmetric_key<SymAlg> derive_shared_key(nu::data_const_ref other) {
+    inline symmetric_key<SymAlg> derive_shared_key(nu::data_const_ref other) {
       nu::data raw_result = _agreement_func->agree(other);
       symmetric_key<SymAlg> ret;
       _kdf->expand(raw_result, ret);
       return ret;
     }
-    void derive_shared_secret(nu::data_const_ref other, nu::data_ref output) {
+    inline void derive_shared_secret(nu::data_const_ref other, nu::data_ref output) {
       _kdf->expand(_agreement_func->agree(other), output);
     }
-    nu::data derive_shared_secret(nu::data_const_ref other, size_t output_len) {
+    inline nu::data derive_shared_secret(nu::data_const_ref other, size_t output_len) {
       nu::data ret(output_len);
       derive_shared_secret(_agreement_func->agree(other), ret);
       return ret;
     }
     template<size_t OutputLen>
-    nu::static_data<OutputLen> derive_shared_secret(nu::data_const_ref other) {
+    inline nu::static_data<OutputLen> derive_shared_secret(nu::data_const_ref other) {
       nu::static_data<OutputLen> ret;
       derive_shared_secret(_agreement_func->agree(other), ret);
       return ret;
     }
 
   private:
-    agreer(agreement_algorithm agreement_alg,
+    inline agreer(agreement_algorithm agreement_alg,
            std::unique_ptr<agreement_function>&& agreement_func,
            const kdf* _kdf) :
       _agreement_alg{agreement_alg},
       _agreement_func{std::forward<decltype(agreement_func)>(agreement_func)},
       _kdf{_kdf} {}
   public:
-    agreer(kdf_algorithm kdf_alg, agreement_algorithm agreement_alg, nu::data_const_ref pub) :
+    inline agreer(kdf_algorithm kdf_alg, agreement_algorithm agreement_alg, nu::data_const_ref pub) :
       _agreement_alg{agreement_alg},
       _agreement_func{get_agreement_function(agreement_alg, pub)},
       _kdf{get_kdf(kdf_alg)} {}
@@ -102,12 +119,15 @@ namespace c3::upsilon {
     inline nu::data get_public() const { return _agreement_func->serialise_public(); }
 
   public:
-    static inline agreer gen(agreement_algorithm agreement_alg, kdf_algorithm kdf_alg) {
+    static inline agreer gen(kdf_algorithm kdf_alg, agreement_algorithm agreement_alg) {
       return { agreement_alg, gen_agreement_function(agreement_alg), get_kdf(kdf_alg) };
     }
-    template<agreement_algorithm AgreementAlg, kdf_algorithm KdfAlg>
+    template<kdf_algorithm KdfAlg, agreement_algorithm AgreementAlg>
     static inline agreer gen() {
       return { AgreementAlg, gen_agreement_function<AgreementAlg>(), get_kdf<KdfAlg>() };
+    }
+    static inline agreer gen(const remote_agreer& base) {
+      return gen(base.kdf_alg, base.agreement_alg);
     }
 
   public:
