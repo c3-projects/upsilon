@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.9)
 
 set(VERSION 0.2.3)
 
-project(c3-upsilon VERSION ${VERSION})
+string(REGEX REPLACE "-.*" "" FRIENDLY_VERSION ${VERSION})
+
+project(c3-upsilon VERSION "${FRIENDLY_VERSION}")
 
 #set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_STANDARD 17)
@@ -15,6 +17,8 @@ find_package(c3-nu REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_search_module(BOTAN REQUIRED botan-2)
 include_directories(${BOTAN_INCLUDE_DIRS})
+
+include_directories(include)
 
 file(GLOB_RECURSE source src/*.cpp)
 
