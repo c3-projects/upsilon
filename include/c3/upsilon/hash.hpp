@@ -10,9 +10,10 @@
 #include <gsl/span>
 
 #include "c3/upsilon/except.hpp"
-#include "c3/nu/data.hpp"
+#include <c3/nu/data.hpp>
+#include <c3/nu/structs.hpp>
 
-#include "c3/nu/data/helpers.hpp"
+#include <c3/nu/data/helpers.hpp>
 
 namespace c3::upsilon {
   template<size_t HashSize = nu::dynamic_size>
@@ -154,33 +155,72 @@ namespace c3::upsilon {
     inline operator hash<HashSize>&() { return value; }
     inline operator const hash<HashSize>&() const { return value; }
 
+  private:
+    inline safe_hash() = default;
   public:
     inline safe_hash(decltype(value) _value, decltype(algorithm) _algorithm) :
       value{_value}, algorithm{_algorithm} {}
+
+  private:
+    void _serialise_static(nu::data_ref b) const override {
+      nu::squash_static_unsafe(b, algorithm, value);
+    }
+    static constexpr size_t serialised_size = nu::total_serialised_size<decltype(value), decltype(algorithm)>();
+    C3_NU_DEFINE_STATIC_DESERIALISE(safe_hash<HashSize>, serialised_size, b) {
+      safe_hash ret;
+      nu::expand_static(b, ret.algorithm, ret.value);
+      return ret;
+    }
   };
-  template<size_t HashSize>
-  bool operator==(safe_hash& other) const {
-    return algorithm == other.algorithm && value == other.value;
+  template<>
+  class safe_hash<nu::dynamic_size> : public nu::serialisable<safe_hash<nu::dynamic_size>> {
+  public:
+    hash<nu::dynamic_size> value;
+    hash_algorithm algorithm;
+
+  public:
+    inline operator hash<nu::dynamic_size>&() { return value; }
+    inline operator const hash<nu::dynamic_size>&() const { return value; }
+
+  private:
+    inline safe_hash() = default;
+  public:
+    inline safe_hash(decltype(value) _value, decltype(algorithm) _algorithm) :
+      value{std::move(_value)}, algorithm{_algorithm} {}
+
+  private:
+    nu::data _serialise() const override {
+      return nu::squash_hybrid(algorithm, value);
+    }
+    C3_NU_DEFINE_DESERIALISE(safe_hash<nu::dynamic_size>, b) {
+      safe_hash ret;
+      nu::expand_hybrid(b, ret.algorithm, ret.value);
+      return ret;
+    }
+  };
+  template<size_t HashSizeA, size_t HashSizeB>
+  bool operator==(const safe_hash<HashSizeA>& a, const safe_hash<HashSizeB>& b) {
+    return a.algorithm == b.algorithm && a.value == b.value;
   }
-  template<size_t HashSize>
-  bool operator!=(safe_hash& other) const {
-    return algorithm != other.algorithm || value != other.value;
+  template<size_t HashSizeA, size_t HashSizeB>
+  bool operator!=(const safe_hash<HashSizeA>& a, const safe_hash<HashSizeB>& b) {
+    return a.algorithm != b.algorithm || a.value != b.value;
   }
-  template<size_t HashSize>
-  bool operator<=(const safe_hash& other) const {
-    return algorithm <= other.algorithm || value <= other.value;
+  template<size_t HashSizeA, size_t HashSizeB>
+  bool operator<=(const safe_hash<HashSizeA>& a, const safe_hash<HashSizeB>& b) {
+    return a.algorithm <= b.algorithm || a.value <= b.value;
   }
-  template<size_t HashSize>
-  bool operator>=(const safe_hash& other) const {
-    return algorithm >= other.algorithm || value >= other.value;
+  template<size_t HashSizeA, size_t HashSizeB>
+  bool operator>=(const safe_hash<HashSizeA>& a, const safe_hash<HashSizeB>& b) {
+    return a.algorithm >= b.algorithm || a.value >= b.value;
   }
-  template<size_t HashSize>
-  bool operator< (const safe_hash& other) const {
-    return algorithm <  other.algorithm || value <  other.value;
+  template<size_t HashSizeA, size_t HashSizeB>
+  bool operator< (const safe_hash<HashSizeA>& a, const safe_hash<HashSizeB>& b) {
+    return a.algorithm <  b.algorithm || a.value <  b.value;
   }
-  template<size_t HashSize>
-  bool operator> (const safe_hash& other) const {
-    return algorithm >  other.algorithm || value >  other.value;
+  template<size_t HashSizeA, size_t HashSizeB>
+  bool operator> (const safe_hash<HashSizeA>& a, const safe_hash<HashSizeB>& b) {
+    return a.algorithm >  b.algorithm || a.value >  b.value;
   }
 
   struct hash_properties {
