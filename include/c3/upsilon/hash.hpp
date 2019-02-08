@@ -125,7 +125,6 @@ namespace c3::upsilon {
   bool operator!=(const hash<ASize>& a, const hash<BSize>& b) {
     return !(a == b);
   }
-
   enum class hash_algorithm : uint16_t {
     SHA2_224    = 0x021c,
     SHA2_256    = 0x0220,
@@ -144,6 +143,45 @@ namespace c3::upsilon {
     BLAKE2s_128 = 0x0510,
     BLAKE2s_256 = 0x0520,
   };
+
+  template<size_t HashSize = nu::dynamic_size>
+  class safe_hash : public nu::static_serialisable<safe_hash<HashSize>> {
+  public:
+    hash<HashSize> value;
+    hash_algorithm algorithm;
+
+  public:
+    inline operator hash<HashSize>&() { return value; }
+    inline operator const hash<HashSize>&() const { return value; }
+
+  public:
+    inline safe_hash(decltype(value) _value, decltype(algorithm) _algorithm) :
+      value{_value}, algorithm{_algorithm} {}
+  };
+  template<size_t HashSize>
+  bool operator==(safe_hash& other) const {
+    return algorithm == other.algorithm && value == other.value;
+  }
+  template<size_t HashSize>
+  bool operator!=(safe_hash& other) const {
+    return algorithm != other.algorithm || value != other.value;
+  }
+  template<size_t HashSize>
+  bool operator<=(const safe_hash& other) const {
+    return algorithm <= other.algorithm || value <= other.value;
+  }
+  template<size_t HashSize>
+  bool operator>=(const safe_hash& other) const {
+    return algorithm >= other.algorithm || value >= other.value;
+  }
+  template<size_t HashSize>
+  bool operator< (const safe_hash& other) const {
+    return algorithm <  other.algorithm || value <  other.value;
+  }
+  template<size_t HashSize>
+  bool operator> (const safe_hash& other) const {
+    return algorithm >  other.algorithm || value >  other.value;
+  }
 
   struct hash_properties {
   public:
