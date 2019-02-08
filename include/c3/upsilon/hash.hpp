@@ -155,9 +155,8 @@ namespace c3::upsilon {
     inline operator hash<HashSize>&() { return value; }
     inline operator const hash<HashSize>&() const { return value; }
 
-  private:
-    inline safe_hash() = default;
   public:
+    inline safe_hash() = default;
     inline safe_hash(decltype(value) _value, decltype(algorithm) _algorithm) :
       value{_value}, algorithm{_algorithm} {}
 
@@ -182,9 +181,8 @@ namespace c3::upsilon {
     inline operator hash<nu::dynamic_size>&() { return value; }
     inline operator const hash<nu::dynamic_size>&() const { return value; }
 
-  private:
-    inline safe_hash() = default;
   public:
+    inline safe_hash() = default;
     inline safe_hash(decltype(value) _value, decltype(algorithm) _algorithm) :
       value{std::move(_value)}, algorithm{_algorithm} {}
 
