@@ -290,7 +290,7 @@ namespace c3::upsilon {
     virtual std::unique_ptr<partial_hash> begin_hash() const = 0;
     virtual std::unique_ptr<partial_hash> begin_hash(nu::data_const_ref salt) const = 0;
 
-    virtual const hash_properties& properties() const noexcept = 0;
+    virtual const hash_properties* properties() const noexcept = 0;
 
   public:
     virtual ~hash_function() = default;
@@ -311,7 +311,6 @@ namespace c3::upsilon {
   class hasher {
   private:
     const hash_function* _impl;
-    const hash_properties& props = _impl->properties();
 
   private:
     template<size_t HashSize = nu::dynamic_size>
@@ -323,7 +322,7 @@ namespace c3::upsilon {
     inline hash<nu::dynamic_size> _get_hash_base(nu::data_const_ref b, nu::data_const_ref salt, size_t len) const;
 
   public:
-    inline const hash_properties& properties() const noexcept { return _impl->properties(); }
+    inline const hash_properties* properties() const noexcept { return _impl->properties(); }
 
     template<size_t HashSize = nu::dynamic_size, typename T>
     hash<HashSize> get_hash(const T& t) const;

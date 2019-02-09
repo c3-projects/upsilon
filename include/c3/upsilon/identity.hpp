@@ -90,7 +90,7 @@ namespace c3::upsilon {
 
   private:
     inline nu::data _serialise() const override {
-      return nu::squash_hybrid(_sig_alg, _msg_hasher.properties().alg, _impl->serialise_pub());
+      return nu::squash_hybrid(_sig_alg, _msg_hasher.properties()->alg, _impl->serialise_pub());
     }
 
     C3_NU_DEFINE_DESERIALISE(identity, b) {
@@ -119,7 +119,7 @@ namespace c3::upsilon {
     }
     inline decltype(_sig_alg) alg() { return _sig_alg; }
     inline nu::data serialise_public() {
-      return nu::squash_hybrid(_sig_alg, _msg_hasher.properties().alg, _impl->serialise_pub());
+      return nu::squash_hybrid(_sig_alg, _msg_hasher.properties()->alg, _impl->serialise_pub());
     }
 
   public:
@@ -142,7 +142,7 @@ namespace c3::upsilon {
   private:
     nu::data inline _serialise() const override {
       signature_algorithm sig_alg = _sig_alg;
-      hash_algorithm msg_hash_alg = _msg_hasher.properties().alg;
+      hash_algorithm msg_hash_alg = _msg_hasher.properties()->alg;
       nu::data buf = _impl->serialise_priv();
 
       auto ret = nu::squash_hybrid(sig_alg, msg_hash_alg, buf);
