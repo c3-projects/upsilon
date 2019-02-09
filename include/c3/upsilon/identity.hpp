@@ -83,12 +83,13 @@ namespace c3::upsilon {
       return _impl->verify(_msg_hasher.get_hash(b), sig);
     }
 
-  private:
-    identity(signature_algorithm sig_alg, hasher msg_hasher, decltype(_impl)&& impl) :
+  public:
+    inline identity() = default;
+    inline identity(signature_algorithm sig_alg, hasher msg_hasher, decltype(_impl)&& impl) :
       _sig_alg{sig_alg}, _msg_hasher{std::move(msg_hasher)}, _impl{std::forward<decltype(impl)>(impl)} {}
 
   private:
-    nu::data _serialise() const override {
+    inline nu::data _serialise() const override {
       return nu::squash_hybrid(_sig_alg, _msg_hasher.properties().alg, _impl->serialise_pub());
     }
 
@@ -121,24 +122,25 @@ namespace c3::upsilon {
       return nu::squash_hybrid(_sig_alg, _msg_hasher.properties().alg, _impl->serialise_pub());
     }
 
-  private:
-    owned_identity(signature_algorithm sig_alg, hasher msg_hasher, decltype(_impl)&& impl) :
+  public:
+    inline owned_identity() = default;
+    inline owned_identity(signature_algorithm sig_alg, hasher msg_hasher, decltype(_impl)&& impl) :
       _sig_alg{sig_alg},
       _msg_hasher{std::move(msg_hasher)},
       _impl{std::forward<decltype(impl)>(impl)} {}
 
   public:
-    static owned_identity gen(signature_algorithm sig_alg, hash_algorithm msg_hash_alg) {
+    static inline owned_identity gen(signature_algorithm sig_alg, hash_algorithm msg_hash_alg) {
       return { sig_alg, get_hasher(msg_hash_alg), gen_signer(sig_alg) };
     }
 
     template<signature_algorithm SigAlg, hash_algorithm MsgHashAlg>
-    static owned_identity gen() {
+    static inline owned_identity gen() {
       return { SigAlg, get_hasher<MsgHashAlg>(), gen_signer<SigAlg>() };
     }
 
   private:
-    nu::data _serialise() const override {
+    nu::data inline _serialise() const override {
       signature_algorithm sig_alg = _sig_alg;
       hash_algorithm msg_hash_alg = _msg_hasher.properties().alg;
       nu::data buf = _impl->serialise_priv();
