@@ -336,7 +336,7 @@ namespace c3::upsilon {
     hash<nu::dynamic_size> get_hash(const T& t, nu::data_const_ref salt, size_t len) const;
 
   public:
-    hasher() : _impl{} {}
+    hasher() : _impl{nullptr} {}
     hasher(const hash_function* impl) : _impl{std::forward<decltype(impl)>(impl)} {}
   };
 

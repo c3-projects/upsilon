@@ -63,6 +63,13 @@ namespace c3::upsilon {
     nu::data shared_secret;
 
   public:
+    inline remote_agreer() = default;
+    inline remote_agreer(decltype(kdf_alg) _kdf_alg,
+                         decltype(agreement_alg) _agreement_alg,
+                         decltype(shared_secret) _shared_secret) :
+      kdf_alg{_kdf_alg}, agreement_alg{_agreement_alg}, shared_secret{_shared_secret} {}
+
+  public:
     inline nu::data _serialise() const override {
       return nu::squash_hybrid(kdf_alg, agreement_alg, shared_secret);
     }
@@ -102,14 +109,14 @@ namespace c3::upsilon {
       return ret;
     }
 
-  private:
+  public:
+    inline agreer() : _kdf{nullptr} {}
     inline agreer(agreement_algorithm agreement_alg,
            std::unique_ptr<agreement_function>&& agreement_func,
            const kdf* _kdf) :
       _agreement_alg{agreement_alg},
       _agreement_func{std::forward<decltype(agreement_func)>(agreement_func)},
       _kdf{_kdf} {}
-  public:
     inline agreer(kdf_algorithm kdf_alg, agreement_algorithm agreement_alg, nu::data_const_ref pub) :
       _agreement_alg{agreement_alg},
       _agreement_func{get_agreement_function(agreement_alg, pub)},
