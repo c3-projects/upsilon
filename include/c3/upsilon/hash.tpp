@@ -36,7 +36,7 @@ namespace c3::upsilon {
   template<size_t HashSize>
   inline hash<HashSize> hasher::_get_hash_base(nu::data_const_ref b) const {
     if constexpr (HashSize == nu::dynamic_size) {
-      return _get_hash_base(b, props.max_output);
+      return _get_hash_base(b, properties()->max_output);
     }
     else {
       hash<HashSize> ret;
@@ -54,7 +54,7 @@ namespace c3::upsilon {
   template<size_t HashSize>
   inline hash<HashSize> hasher::_get_hash_base(nu::data_const_ref b, nu::data_const_ref salt) const {
     if constexpr (HashSize == nu::dynamic_size) {
-      return _get_hash_base(b, salt, props.max_output);
+      return _get_hash_base(b, salt, properties()->max_output);
     }
     else {
       hash<HashSize> ret;

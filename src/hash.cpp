@@ -41,7 +41,7 @@
     std::unique_ptr<partial_hash> begin_hash(nu::data_const_ref) const override{ \
       throw std::runtime_error("Not implemented"); \
     } \
-    const hash_properties& properties() const noexcept override { return static_props; } \
+    const hash_properties* properties() const noexcept override { return &static_props; } \
   }; \
   static const CLASS_NAME CLASS_NAME##_static; \
   static auto __##CLASS_NAME##_registered = _hash_funcs.emplace(ALG, &CLASS_NAME##_static); \
