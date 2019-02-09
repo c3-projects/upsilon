@@ -311,7 +311,6 @@ namespace c3::upsilon {
   class hasher {
   private:
     const hash_function* _impl;
-    const hash_properties& props = _impl->properties();
 
   private:
     template<size_t HashSize = nu::dynamic_size>
