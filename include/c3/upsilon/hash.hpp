@@ -188,11 +188,11 @@ namespace c3::upsilon {
 
   private:
     nu::data _serialise() const override {
-      return nu::squash_hybrid(algorithm, value);
+      return nu::squash(algorithm, value);
     }
     C3_NU_DEFINE_DESERIALISE(safe_hash<nu::dynamic_size>, b) {
       safe_hash ret;
-      nu::expand_hybrid(b, ret.algorithm, ret.value);
+      nu::expand(b, ret.algorithm, ret.value);
       return ret;
     }
   };
