@@ -71,11 +71,11 @@ namespace c3::upsilon {
 
   public:
     inline nu::data _serialise() const override {
-      return nu::squash_hybrid(kdf_alg, agreement_alg, shared_secret);
+      return nu::squash(kdf_alg, agreement_alg, shared_secret);
     }
     C3_NU_DEFINE_DESERIALISE(remote_agreer, b) {
       remote_agreer ret;
-      nu::expand_hybrid(b, ret.kdf_alg, ret.agreement_alg, ret.shared_secret);
+      nu::expand(b, ret.kdf_alg, ret.agreement_alg, ret.shared_secret);
       return ret;
     }
   };
@@ -139,14 +139,14 @@ namespace c3::upsilon {
 
   public:
     nu::data _serialise() const override {
-      return nu::squash_hybrid(_kdf->alg(), _agreement_alg, _agreement_func->serialise_private());
+      return nu::squash(_kdf->alg(), _agreement_alg, _agreement_func->serialise_private());
     }
     C3_NU_DEFINE_DESERIALISE(agreer, b) {
       kdf_algorithm kdf_alg;
       agreement_algorithm agreement_alg;
       nu::data_const_ref pub;
 
-      nu::expand_hybrid(b, kdf_alg, agreement_alg, pub);
+      nu::expand(b, kdf_alg, agreement_alg, pub);
 
       return {kdf_alg, agreement_alg, pub};
     }
