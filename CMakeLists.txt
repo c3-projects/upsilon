@@ -9,8 +9,21 @@ project(c3-upsilon VERSION "${FRIENDLY_VERSION}")
 #set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_STANDARD 17)
 
-# For some reason, CMAKE_CXX_STANDARD is broken on my system
-add_compile_options("-Wall" "-Wextra") #"-pedantic"
+# Warnings
+add_compile_options("-Wall" "-Wextra")
+# Security
+add_compile_options(
+  "-D_FORTIFY_SOURCE=2"
+  "-fstack-protector-strong"
+  # When the stack and the heap meet, bad things have happened
+  "-fstack-clash-protection"
+  # Attempts to remove rop gadgets
+  "-mmitigate-rop"
+  # Signed o/f
+  "-ftrapv"
+  # Makes a buch of things r/o
+  "-Wl,-z,relro.-z,now"
+)
 
 find_package(c3-nu REQUIRED)
 
