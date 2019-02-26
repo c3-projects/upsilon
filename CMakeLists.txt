@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 
-set(VERSION 0.3.3)
+set(VERSION 4.0-rc1)
 
 string(REGEX REPLACE "-.*" "" FRIENDLY_VERSION ${VERSION})
 
@@ -9,9 +9,18 @@ project(c3-upsilon VERSION "${FRIENDLY_VERSION}")
 #set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_STANDARD 17)
 
-# For some reason, CMAKE_CXX_STANDARD is broken on my system
-add_compile_options("-Wall" "-Wextra") #"-pedantic"
+# Warnings
+add_compile_options("-Wall" "-Wextra")
+# Security
+add_compile_options("-D_FORTIFY_SOURCE=2")
+add_compile_options("-fstack-protector-strong")
+# Signed o/f protection
+add_compile_options("-ftrapv")
+# Makes a buch of things r/o
+#add_compile_options("-Wl,-z,relro,-z,now")
 
+# Makes a bunch of things r/o so it is harder to exploit
+add_link_options("-Wl,-z,relro,-z,now")
 find_package(c3-nu REQUIRED)
 
 find_package(PkgConfig REQUIRED)
@@ -86,14 +95,15 @@ if(CPACK_GENERATOR STREQUAL "DEB")
   set(CPACK_DEBIAN_LIB_PACKAGE_NAME "${PROJECT_NAME}")
   set(CPACK_DEBIAN_DEV_PACKAGE_NAME "${PROJECT_NAME}-dev")
   SET(CPACK_COMPONENT_UNSPECIFIED_HIDDEN TRUE)
-  set(CPACK_DEBIAN_LIB_PACKAGE_DEPENDS " \
-    botan (>= 2.8.0), botan (<< 3) \
-  ")
-  set(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS " \
-    libstdc++-7-dev | libc++-7-dev, \
-    c3-upsilon (= ${PROJECT_VERSION}), \
-    c3-nu-dev (>= 0.8.0), c3-nu-dev (<< 0.10) \
-  ")
+  string(CONCAT CPACK_DEBIAN_LIB_PACKAGE_DEPENDS
+    "botan (>= 2.8.0), botan (<< 3)"
+  )
+  string(CONCAT CPACK_DEBIAN_DEV_PACKAGE_DEPENDS
+    "libstdc++-7-dev | libc++-7-dev,"
+    "c3-upsilon (= ${PROJECT_VERSION}),"
+    "c3-nu-dev (>= 0.8.0), c3-nu-dev (<< 0.10)"
+    )
+  message(${CPACK_DEBIAN_DEV_PACKAGE_DEPENDS})
 endif()
 
 set(CPACK_COMPONENT_DEV_DEPENDS lib)
