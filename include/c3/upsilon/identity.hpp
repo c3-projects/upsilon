@@ -132,6 +132,11 @@ namespace c3::upsilon {
       _impl{std::forward<decltype(impl)>(impl)} {}
 
   public:
+    explicit operator identity() const {
+      return {_sig_alg, _msg_hasher, get_verifier(_sig_alg, _impl->serialise_pub()) };
+    }
+
+  public:
     static inline owned_identity gen(signature_algorithm sig_alg, hash_algorithm msg_hash_alg) {
       return { sig_alg, get_hasher(msg_hash_alg), gen_signer(sig_alg) };
     }
