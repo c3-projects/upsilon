@@ -5,7 +5,7 @@
 
 #define C3_UPSILON_DEF_HASH_BOTAN(CLASS_NAME, ALG, BOTAN_HASH_NAME) \
   thread_local static auto CLASS_NAME##_impl = Botan::HashFunction::create(BOTAN_HASH_NAME); \
-  class CLASS_NAME##_partial : public partial_hash { \
+  class CLASS_NAME##_partial : public partial_hash_function { \
   public: \
     static constexpr auto props = get_hash_properties<ALG>(); \
     static constexpr auto static_props = props; \
@@ -61,10 +61,10 @@
         std::copy(tmp_output.begin(), tmp_output.begin() + output.size(), output.begin()); \
       } \
     } \
-    std::unique_ptr<partial_hash> begin_hash() const override { \
+    std::unique_ptr<partial_hash_function> begin_hash() const override { \
       return std::make_unique<CLASS_NAME##_partial>(); \
     } \
-    std::unique_ptr<partial_hash> begin_hash(nu::data_const_ref salt) const override{ \
+    std::unique_ptr<partial_hash_function> begin_hash(nu::data_const_ref salt) const override{ \
       return std::make_unique<CLASS_NAME##_partial>(nu::data(salt.begin(), salt.end())); \
     } \
     const hash_properties* properties() const noexcept override { return &static_props; } \
