@@ -334,6 +334,9 @@ namespace c3::upsilon {
     template<typename T>
     hash<nu::dynamic_size> get_hash(const T& t, nu::data_const_ref salt, size_t len) const;
 
+    inline std::unique_ptr<partial_hash> begin_hash() const { return _impl->begin_hash(); }
+    inline std::unique_ptr<partial_hash> begin_hash(nu::data_const_ref salt) const { return _impl->begin_hash(salt); }
+
   public:
     hasher() : _impl{nullptr} {}
     hasher(const hash_function* impl) : _impl{std::forward<decltype(impl)>(impl)} {}
