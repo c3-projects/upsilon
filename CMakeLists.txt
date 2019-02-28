@@ -103,7 +103,6 @@ if(CPACK_GENERATOR STREQUAL "DEB")
     "c3-upsilon (= ${CPACK_DEBIAN_PACKAGE_VERSION}),"
     "c3-nu-dev (>= 0.10.0), c3-nu-dev (<< 0.11)"
     )
-  message(${CPACK_DEBIAN_DEV_PACKAGE_DEPENDS})
 endif()
 
 set(CPACK_COMPONENT_DEV_DEPENDS lib)
