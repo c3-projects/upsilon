@@ -246,7 +246,7 @@ namespace c3::upsilon {
       return (iter->second);
   }
 
-  class partial_hash {
+  class partial_hash_function {
   public:
     virtual void process(nu::data_const_ref input) = 0;
     /// Invalidates the partial_hash function
@@ -255,15 +255,15 @@ namespace c3::upsilon {
     virtual void reset() = 0;
 
   public:
-    virtual ~partial_hash() = default;
+    virtual ~partial_hash_function() = default;
 
   public:
     class salt_wrapper;
   };
 
-  class partial_hash::salt_wrapper : public partial_hash {
+  class partial_hash_function::salt_wrapper : public partial_hash_function {
   private:
-    std::unique_ptr<partial_hash> _base;
+    std::unique_ptr<partial_hash_function> _base;
     nu::data _salt;
 
   public:
@@ -285,10 +285,11 @@ namespace c3::upsilon {
     virtual void compute_hash(nu::data_const_ref input, nu::data_ref output) const = 0;
     // If the function fdoes not have a salt paramter, the salt should be prepended
     // i.e. by using partial_hash::salt_wrapper
-    virtual void compute_hash(nu::data_const_ref input, nu::data_const_ref salt, nu::data_ref output) const = 0;
+    virtual void compute_hash(nu::data_const_ref input, nu::data_const_ref salt,
+                              nu::data_ref output) const = 0;
 
-    virtual std::unique_ptr<partial_hash> begin_hash() const = 0;
-    virtual std::unique_ptr<partial_hash> begin_hash(nu::data_const_ref salt) const = 0;
+    virtual std::unique_ptr<partial_hash_function> begin_hash() const = 0;
+    virtual std::unique_ptr<partial_hash_function> begin_hash(nu::data_const_ref salt) const = 0;
 
     virtual const hash_properties* properties() const noexcept = 0;
 
@@ -308,6 +309,27 @@ namespace c3::upsilon {
       return (iter->second);
   }
 
+  class partial_hasher {
+  private:
+    const hash_properties* props;
+    std::unique_ptr<partial_hash_function> _impl;
+
+  public:
+    inline void process(nu::data_const_ref input) { _impl->process(input); }
+    template<size_t HashSize = nu::dynamic_size>
+    inline hash<HashSize> finish() {
+      hash<HashSize> ret;
+      if constexpr (HashSize == nu::dynamic_size)
+          ret.value.resize(props->max_output);
+      _impl->finish(ret);
+      return ret;
+    }
+
+  public:
+    partial_hasher(decltype(props) props, decltype(_impl)&& impl) :
+      props{props}, _impl{std::move(impl)} {}
+  };
+
   class hasher {
   private:
     const hash_function* _impl;
@@ -319,7 +341,8 @@ namespace c3::upsilon {
 
     template<size_t HashSize = nu::dynamic_size>
     inline hash<HashSize> _get_hash_base(nu::data_const_ref b, nu::data_const_ref salt) const;
-    inline hash<nu::dynamic_size> _get_hash_base(nu::data_const_ref b, nu::data_const_ref salt, size_t len) const;
+    inline hash<nu::dynamic_size> _get_hash_base(nu::data_const_ref b, nu::data_const_ref salt,
+                                                 size_t len) const;
 
   public:
     inline const hash_properties* properties() const noexcept { return _impl->properties(); }
@@ -334,12 +357,14 @@ namespace c3::upsilon {
     template<typename T>
     hash<nu::dynamic_size> get_hash(const T& t, nu::data_const_ref salt, size_t len) const;
 
-    inline std::unique_ptr<partial_hash> begin_hash() const { return _impl->begin_hash(); }
-    inline std::unique_ptr<partial_hash> begin_hash(nu::data_const_ref salt) const { return _impl->begin_hash(salt); }
+    inline partial_hasher begin_hash() const { return { properties(), _impl->begin_hash() }; }
+    inline partial_hasher begin_hash(nu::data_const_ref salt) const {
+      return { properties(), _impl->begin_hash(salt) };
+    }
 
   public:
     hasher() : _impl{nullptr} {}
-    hasher(const hash_function* impl) : _impl{std::forward<decltype(impl)>(impl)} {}
+    hasher(const hash_function* impl) : _impl{std::move(impl)} {}
   };
 
   template<hash_algorithm Alg>
