@@ -1,8 +1,11 @@
 #include "c3/upsilon/hash.hpp"
 
+#include "c3/nu/data/hex.hpp"
+#include <iostream>
+
 using namespace c3::upsilon;
 
-constexpr auto hash_alg = c3::upsilon::hash_algorithm::BLAKE2b_256;
+constexpr auto hash_alg = c3::upsilon::hash_algorithm::BLAKE2b_512;
 
 int main() {
   auto hasher = get_hasher<hash_alg>();

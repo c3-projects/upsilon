@@ -13,9 +13,9 @@
     std::unique_ptr<Botan::HashFunction> hf = Botan::HashFunction::create(BOTAN_HASH_NAME); \
     nu::data salt; \
   public: \
-    void process(nu::data_const_ref input) override { hf->process(input.data(), input.size()); } \
+    void process(nu::data_const_ref input) override { hf->update(input.data(), input.size()); } \
     void finish(nu::data_ref output) override { \
-      hf->process(salt.data(), salt.size()); \
+      hf->update(salt.data(), salt.size()); \
       if (output.size() == props.max_output) \
         hf->final(output.data()); \
       else if (static_cast<size_t>(output.size()) > props.max_output) \
