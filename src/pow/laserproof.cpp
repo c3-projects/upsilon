@@ -14,12 +14,12 @@ namespace c3::upsilon {
     auto ph = h.begin_hash(proof);
 
     for (auto iter = first_block_start; iter != final_block_start; iter -= buf.size())
-      ph->process({&*iter, static_cast<nu::data_const_ref::index_type>(backstride_len)});
+      ph.process({&*iter, static_cast<nu::data_const_ref::index_type>(backstride_len)});
 
-    auto hash = ph->finish();
+    auto hash = ph.finish();
 
     uint8_t result = 0;
-    for (auto i : hash)
+    for (auto i : hash.value)
       result ^= i;
 
     return result < threshold;
