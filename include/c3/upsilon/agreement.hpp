@@ -7,7 +7,7 @@
 #include "c3/upsilon/symmetric.hpp"
 
 #include <c3/nu/data.hpp>
-#include <c3/nu/data/collections/mixed.hpp>
+#include <c3/nu/data/collections.hpp>
 
 #include <c3/nu/data/helpers.hpp>
 
