@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.13)
 
-set(VERSION 4.0-rc2)
+set(VERSION 0.4.0)
 
 string(REGEX REPLACE "-.*" "" FRIENDLY_VERSION ${VERSION})
 
@@ -101,7 +101,7 @@ if(CPACK_GENERATOR STREQUAL "DEB")
   string(CONCAT CPACK_DEBIAN_DEV_PACKAGE_DEPENDS
     "libstdc++-7-dev | libc++-7-dev,"
     "c3-upsilon (= ${CPACK_DEBIAN_PACKAGE_VERSION}),"
-    "c3-nu-dev (>= 0.8.0), c3-nu-dev (<< 0.10)"
+    "c3-nu-dev (>= 0.10.0), c3-nu-dev (<< 0.11)"
     )
   message(${CPACK_DEBIAN_DEV_PACKAGE_DEPENDS})
 endif()

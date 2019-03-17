@@ -1,16 +1,17 @@
 #pragma once
 
 #include "c3/upsilon/hash.hpp"
-#include "c3/nu/data.hpp"
-#include "c3/nu/structs.hpp"
+#include <c3/nu/data.hpp>
+#include <c3/nu/data/collections/mixed.hpp>
 
-#include "c3/nu/data/helpers.hpp"
+#include <c3/nu/data/helpers.hpp>
 
 namespace c3::upsilon {
   enum class signature_algorithm : uint16_t {
     Curve25519 = 0x0000
   };
 
+  /// MUST be thread-safe
   class verifier {
   public:
     virtual bool verify(nu::data_const_ref input_hashed, nu::data_const_ref sig) const = 0;
@@ -19,6 +20,7 @@ namespace c3::upsilon {
   public:
     virtual ~verifier() = default;
   };
+  /// MUST be thread-safe
   class signer : public verifier {
   public:
     virtual bool verify(nu::data_const_ref input_hashed, nu::data_const_ref sig) const override = 0;
@@ -75,12 +77,12 @@ namespace c3::upsilon {
   private:
     signature_algorithm _sig_alg;
     hasher _msg_hasher;
-    std::unique_ptr<verifier> _impl;
+    std::shared_ptr<verifier> _impl;
 
   public:
     inline decltype(_sig_alg) alg() { return _sig_alg; }
     inline bool verify(nu::data_const_ref b, nu::data_const_ref sig) {
-      return _impl->verify(_msg_hasher.get_hash(b), sig);
+      return _impl->verify(_msg_hasher.get_hash<nu::dynamic_size>(b), sig);
     }
 
   public:
@@ -108,14 +110,14 @@ namespace c3::upsilon {
   private:
     signature_algorithm _sig_alg;
     hasher _msg_hasher;
-    std::unique_ptr<signer> _impl;
+    std::shared_ptr<signer> _impl;
 
   public:
     inline nu::data sign(nu::data_const_ref b) const {
-      return _impl->sign(_msg_hasher.get_hash(b));
+      return _impl->sign(_msg_hasher.get_hash<nu::dynamic_size>(b));
     }
     inline bool verify(nu::data_const_ref b, nu::data_const_ref sig) const {
-      return _impl->verify(_msg_hasher.get_hash(b), sig);
+      return _impl->verify(_msg_hasher.get_hash<nu::dynamic_size>(b), sig);
     }
     inline decltype(_sig_alg) alg() { return _sig_alg; }
     inline nu::data serialise_public() {
@@ -128,6 +130,11 @@ namespace c3::upsilon {
       _sig_alg{sig_alg},
       _msg_hasher{std::move(msg_hasher)},
       _impl{std::forward<decltype(impl)>(impl)} {}
+
+  public:
+    explicit operator identity() const {
+      return {_sig_alg, _msg_hasher, get_verifier(_sig_alg, _impl->serialise_pub()) };
+    }
 
   public:
     static inline owned_identity gen(signature_algorithm sig_alg, hash_algorithm msg_hash_alg) {
@@ -162,4 +169,4 @@ namespace c3::upsilon {
   };
 }
 
-#include "c3/nu/data/clean_helpers.hpp"
+#include <c3/nu/data/clean_helpers.hpp>

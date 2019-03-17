@@ -6,10 +6,10 @@
 #include "c3/upsilon/kdf.hpp"
 #include "c3/upsilon/symmetric.hpp"
 
-#include "c3/nu/data.hpp"
-#include "c3/nu/structs.hpp"
+#include <c3/nu/data.hpp>
+#include <c3/nu/data/collections/mixed.hpp>
 
-#include "c3/nu/data/helpers.hpp"
+#include <c3/nu/data/helpers.hpp>
 
 namespace c3::upsilon {
   enum class agreement_algorithm : uint16_t {

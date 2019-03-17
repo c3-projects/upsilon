@@ -1,2 +1,4 @@
 # For qtcreator
 CMakeLists.txt.user*
+**/*.autosave
+**/*.orig
