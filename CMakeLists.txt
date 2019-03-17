@@ -101,7 +101,7 @@ if(CPACK_GENERATOR STREQUAL "DEB")
   string(CONCAT CPACK_DEBIAN_DEV_PACKAGE_DEPENDS
     "libstdc++-7-dev | libc++-7-dev,"
     "c3-upsilon (= ${CPACK_DEBIAN_PACKAGE_VERSION}),"
-    "c3-nu-dev (>= 0.10.0), c3-nu-dev (<< 0.11)"
+    "c3-nu-dev (>= 0.11.0), c3-nu-dev (<< 0.12)"
     )
   message(${CPACK_DEBIAN_DEV_PACKAGE_DEPENDS})
 endif()
