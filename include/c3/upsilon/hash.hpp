@@ -12,8 +12,7 @@
 #include "c3/upsilon/except.hpp"
 
 #include <c3/nu/data.hpp>
-#include <c3/nu/data/collections/mixed.hpp>
-#include <c3/nu/data/collections/static.hpp>
+#include <c3/nu/data/collections.hpp>
 #include <c3/nu/data/helpers.hpp>
 
 namespace c3::upsilon {
