@@ -10,9 +10,10 @@
 #include <gsl/span>
 
 #include "c3/upsilon/except.hpp"
-#include <c3/nu/data.hpp>
-#include <c3/nu/structs.hpp>
 
+#include <c3/nu/data.hpp>
+#include <c3/nu/data/collections/mixed.hpp>
+#include <c3/nu/data/collections/static.hpp>
 #include <c3/nu/data/helpers.hpp>
 
 namespace c3::upsilon {
@@ -410,6 +411,6 @@ namespace c3::upsilon {
 #undef C3_UPSILON_HASH_ALG
 }
 
-#include "c3/nu/data/clean_helpers.hpp"
+#include <c3/nu/data/clean_helpers.hpp>
 
 #include "c3/upsilon/hash.tpp"

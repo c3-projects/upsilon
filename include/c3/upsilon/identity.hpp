@@ -1,10 +1,10 @@
 #pragma once
 
 #include "c3/upsilon/hash.hpp"
-#include "c3/nu/data.hpp"
-#include "c3/nu/structs.hpp"
+#include <c3/nu/data.hpp>
+#include <c3/nu/data/collections/mixed.hpp>
 
-#include "c3/nu/data/helpers.hpp"
+#include <c3/nu/data/helpers.hpp>
 
 namespace c3::upsilon {
   enum class signature_algorithm : uint16_t {
@@ -169,4 +169,4 @@ namespace c3::upsilon {
   };
 }
 
-#include "c3/nu/data/clean_helpers.hpp"
+#include <c3/nu/data/clean_helpers.hpp>

@@ -1,6 +1,6 @@
 #include "c3/upsilon/hash.hpp"
 
-#include "c3/nu/data/hex.hpp"
+#include <c3/nu/data/encoders/hex.hpp>
 #include <iostream>
 
 using namespace c3::upsilon;

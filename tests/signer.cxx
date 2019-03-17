@@ -1,6 +1,6 @@
 #include "c3/upsilon/identity.hpp"
 
-#include "c3/nu/data.hpp"
+#include <c3/nu/data.hpp>
 
 #include <memory>
 #include <iostream>
